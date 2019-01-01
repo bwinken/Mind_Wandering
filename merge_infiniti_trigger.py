@@ -76,7 +76,7 @@ def merge_trigger(data,trigger_file,filename):
 
 	if(	trig_num != total_trig):
 		print("trig num:",trig_num)
-		print("total_trig:",total_trig)
+		print("Golden_trig_num:",total_trig)
 		
 	assert(trig_num == total_trig)
 	
