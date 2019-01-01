@@ -15,8 +15,8 @@ def parse_data(tobii_file):
 #return True when equal
 def first_layer_check(event,trigger_num):
 	event_num = (event == "SyncPortInHigh").sum()
-	print("Trigger Num is:",trigger_num)
-	print("Event Num is:",event_num)
+	print("Trigger Num is:",event_num)
+	print("Goleden Trigger Num is:",trigger_num)
 	return (event_num==trigger_num)
 	
 	
@@ -101,9 +101,9 @@ if __name__ == "__main__":
 	trigger_file 			= os.path.join(data_path,user_name+"_eegtrigger_prerest."+trigger_format)
 	processed_tobii_file 	= os.path.join(data_path,"user"+user_id+"_pre_tobii."+output_format)
 	
-	#print("Processing Tobii's Pre")
-	#tobii,timestamp,event = parse_data(tobii_file)
-	#merge_trigger(tobii,timestamp,event,trigger_file,processed_tobii_file)
+	print("Processing Tobii's Pre")
+	tobii,timestamp,event = parse_data(tobii_file)
+	merge_trigger(tobii,timestamp,event,trigger_file,processed_tobii_file)
 	
 	
 	#post

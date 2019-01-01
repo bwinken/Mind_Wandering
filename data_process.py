@@ -8,7 +8,7 @@ from scipy.signal import find_peaks
 def parse_data(filename):
 	data = pd.read_csv(filename,skiprows=6)
 	print("Data Shape : ",data.shape)
-	print(data)
+	#print(data)
 	#time = data[['Time']].values
 	data = data[['E: VI4','F: VI3','G: VI2','H: VI1']].values
 	
@@ -104,13 +104,12 @@ def plot_compare_interval(data,time_eprime):
 	plt.show()
 	
 train_csv = sys.argv[1]
-eprime_csv = sys.argv[2]
 
 data= parse_data(train_csv)
 #time_eprime = parse_data_eprime(eprime_csv)
 
-start = 350000
-end   = 450000
+start = 1
+end   = -1
 #print("RMSE:",np.sqrt(np.mean((interval_eprime-interval_array)**2)))
 
 
