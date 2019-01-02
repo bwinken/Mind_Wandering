@@ -108,8 +108,8 @@ train_csv = sys.argv[1]
 data= parse_data(train_csv)
 #time_eprime = parse_data_eprime(eprime_csv)
 
-start = 1
-end   = -1
+start = 10000
+end   = 20000
 #print("RMSE:",np.sqrt(np.mean((interval_eprime-interval_array)**2)))
 
 

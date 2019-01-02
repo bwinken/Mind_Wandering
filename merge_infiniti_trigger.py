@@ -97,13 +97,13 @@ if __name__ == "__main__":
 	output_format = "csv"
 	
 	#pre
-	#infiniti_file 			= os.path.join(data_path,user_name+"_infiniti_prerest."+infiniti_format)
-	#trigger_file 			= os.path.join(data_path,user_name+"_eegtrigger_prerest."+trigger_format)
-	#infiniti_csv			= os.path.join(data_path,"user"+user_id+"_pre_infiniti."+output_format)
-	#
-	#print("Processing Infiniti's Pre")
-	#data = parse_data(infiniti_file)
-	#merge_trigger(data,trigger_file,infiniti_csv)
+	infiniti_file 			= os.path.join(data_path,user_name+"_infiniti_prerest."+infiniti_format)
+	trigger_file 			= os.path.join(data_path,user_name+"_eegtrigger_prerest."+trigger_format)
+	infiniti_csv			= os.path.join(data_path,"user"+user_id+"_pre_infiniti."+output_format)
+	
+	print("Processing Infiniti's Pre")
+	data = parse_data(infiniti_file)
+	merge_trigger(data,trigger_file,infiniti_csv)
 	
 	#post
 	infiniti_file 			= os.path.join(data_path,user_name+"_infiniti_postrest."+infiniti_format)

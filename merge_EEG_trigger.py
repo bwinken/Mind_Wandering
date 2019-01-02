@@ -5,18 +5,40 @@ import os
 
 def parse_data(EEG_txt):
 	COL = ['FP1','FP2','F7','F3','FZ','F4','F8','FT7','FC3','FCZ','FC4','FT8','T7','C3','CZ','C4','T8','M2','TP7','CP3','CPZ','CP4','TP8','P7','P3','PZ','P4','P8','O1','OZ','O2','HEO','VEO']	
-	EEG = pd.read_csv(EEG_txt,sep='\t')
-	EEG = EEG[COL].values
+	EEG = pd.read_csv(EEG_txt,sep='\t',index_col=False)
+	EEG = EEG[COL]
 	print(EEG.shape)
 	return EEG
 
-def merge_trigger(EEG,trigger_csv,EEG_csv):
+def GetRatingList(EPRIME_txt,trig_list):
+	eprime_data = pd.read_csv(EPRIME_txt,sep='\t',skiprows=1,encoding='utf-16')
+	size_of_trig = len(trig_list)
+
+	rating_list = [None]*size_of_trig 
+	rating_RT_list = [None]*size_of_trig 
+
+	df = eprime_data[['Rating.RESP','Rating.RT','triggerx']]
+	df = df.loc[df['triggerx']==255].values
+	print(df.shape)
+
+	assert(df.shape[0] == trig_list.count("target"))
+
+	index = 0
+	for i in range(size_of_trig):
+		if(trig_list[i]=="target"):
+			rating_list[i]		= df[index,0]
+			rating_RT_list[i]	= df[index,1]
+			index += 1
+	
+	return rating_list,rating_RT_list
+
+def merge_trigger(EEG,trigger_csv,EEG_csv,EPRIME_txt=None,main=False):
 	normal = 36
 	response = 68
 	target	= 12
 	target_res = 20
 	trial = 255
-	COL = ['FP1','FP2','F7','F3','FZ','F4','F8','FT7','FC3','FCZ','FC4','FT8','T7','C3','CZ','C4','T8','M2','TP7','CP3','CPZ','CP4','TP8','P7','P3','PZ','P4','P8','O1','OZ','O2','HEO','VEO','trigger']
+	#COL = ['FP1','FP2','F7','F3','FZ','F4','F8','FT7','FC3','FCZ','FC4','FT8','T7','C3','CZ','C4','T8','M2','TP7','CP3','CPZ','CP4','TP8','P7','P3','PZ','P4','P8','O1','OZ','O2','HEO','VEO','trigger']
 	
 	trigger = pd.read_csv(trigger_csv,sep="\t")
 	trig_type = trigger[['type']].values
@@ -38,12 +60,25 @@ def merge_trigger(EEG,trigger_csv,EEG_csv):
 			trig_list[int(trig_latency[i,0])] = "probe"
 		else:
 			print("ERROR OCCURS")
-			
-	trig = np.asarray(trig_list)
-	trig = np.reshape(trig,(trig.shape[0],1))
-	
-	new_EEG = np.hstack((EEG,trig))
-	df = pd.DataFrame(new_EEG,columns=COL)
+
+	if main == True:
+		Rating_list,Rating_RT_list = GetRatingList(EPRIME_txt,trig_list)
+		Rating = {"Rating":Rating_list}
+		Rating_RT = {"Rating_RT":Rating_RT_list}
+
+		#Rating DataFrame
+		df_rating = pd.DataFrame(Rating)
+		df_rating_RT = pd.DataFrame(Rating_RT)
+
+	#EEG dataframe
+	trig = {"trigger":trig_list}
+	trig_df = pd.DataFrame(trig)
+	df = pd.concat([EEG,trig_df],axis=1)
+
+	#Concat
+	if main==True:
+		df = pd.concat([df,df_rating,df_rating_RT],axis=1)
+
 	df.to_csv(EEG_csv)
 	print("Merge to ",EEG_csv)
 	
@@ -54,6 +89,7 @@ if __name__ == "__main__":
 	user_id = user_name.split('_')[0]
 	
 	EEG_format = "txt"
+	EPRIME_format = "txt"
 	trigger_format = "csv"
 	output_format = "csv"
 	
@@ -80,8 +116,9 @@ if __name__ == "__main__":
 	EEG_txt 				= os.path.join(data_path,user_name+"_eegoutput_main."+EEG_format)
 	trigger_csv 			= os.path.join(data_path,user_name+"_eegtrigger_main."+trigger_format)
 	EEG_csv					= os.path.join(data_path,"user"+user_id+"_main_EEG."+output_format)
+	EPRIME_txt				= os.path.join(data_path,user_name+"_eprime_mainoutput."+EPRIME_format)
 	
 	print("Processing EEG's Main")
 	EEG = parse_data(EEG_txt)
-	merge_trigger(EEG,trigger_csv,EEG_csv)
+	merge_trigger(EEG,trigger_csv,EEG_csv,EPRIME_txt,main=True)
 	
