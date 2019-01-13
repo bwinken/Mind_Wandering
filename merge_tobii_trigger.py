@@ -104,7 +104,7 @@ if __name__ == "__main__":
 	print("Processing Tobii's Pre")
 	tobii,timestamp,event = parse_data(tobii_file)
 	merge_trigger(tobii,timestamp,event,trigger_file,processed_tobii_file)
-	
+
 	
 	#post
 	tobii_file 				= os.path.join(data_path,user_name+"_tobii_postrest."+tobii_format)

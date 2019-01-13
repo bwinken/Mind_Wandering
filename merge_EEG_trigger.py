@@ -16,8 +16,9 @@ def GetRatingList(EPRIME_txt,trig_list):
 
 	rating_list = [None]*size_of_trig 
 	rating_RT_list = [None]*size_of_trig 
+	thought_list = [None]*size_of_trig 
 
-	df = eprime_data[['Rating.RESP','Rating.RT','triggerx']]
+	df = eprime_data[['Rating.RESP','Rating.RT','ThoughtContent.RESP','triggerx']]
 	df = df.loc[df['triggerx']==255].values
 	print(df.shape)
 
@@ -28,9 +29,11 @@ def GetRatingList(EPRIME_txt,trig_list):
 		if(trig_list[i]=="target"):
 			rating_list[i]		= df[index,0]
 			rating_RT_list[i]	= df[index,1]
+			thought_list[i]		= df[index,2]
 			index += 1
 	
-	return rating_list,rating_RT_list
+	return rating_list,rating_RT_list,thought_list
+
 
 def merge_trigger(EEG,trigger_csv,EEG_csv,EPRIME_txt=None,main=False):
 	normal = 36
@@ -62,13 +65,15 @@ def merge_trigger(EEG,trigger_csv,EEG_csv,EPRIME_txt=None,main=False):
 			print("ERROR OCCURS")
 
 	if main == True:
-		Rating_list,Rating_RT_list = GetRatingList(EPRIME_txt,trig_list)
+		Rating_list,Rating_RT_list,thought_list = GetRatingList(EPRIME_txt,trig_list)
 		Rating = {"Rating":Rating_list}
 		Rating_RT = {"Rating_RT":Rating_RT_list}
+		Thought	= {"Thought":thought_list}
 
 		#Rating DataFrame
 		df_rating = pd.DataFrame(Rating)
 		df_rating_RT = pd.DataFrame(Rating_RT)
+		df_thought	= pd.DataFrame(Thought)
 
 	#EEG dataframe
 	trig = {"trigger":trig_list}
@@ -77,7 +82,7 @@ def merge_trigger(EEG,trigger_csv,EEG_csv,EPRIME_txt=None,main=False):
 
 	#Concat
 	if main==True:
-		df = pd.concat([df,df_rating,df_rating_RT],axis=1)
+		df = pd.concat([df,df_rating,df_rating_RT,df_thought],axis=1)
 
 	df.to_csv(EEG_csv)
 	print("Merge to ",EEG_csv)
